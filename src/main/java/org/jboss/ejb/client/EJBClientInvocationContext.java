@@ -92,7 +92,17 @@ public final class EJBClientInvocationContext extends AbstractInvocationContext 
     EJBClientInvocationContext(final EJBInvocationHandler<?> invocationHandler, final EJBClientContext ejbClientContext, final Object invokedProxy, final Object[] parameters, final EJBProxyInformation.ProxyMethodInfo methodInfo, final int allowedRetries, final Supplier<AuthenticationContext> authenticationContextSupplier, final Discovery discoveryContext) {
         super(invocationHandler.getLocator(), ejbClientContext);
         this.invocationHandler = invocationHandler;
-        this.authenticationContext = authenticationContextSupplier != null ? authenticationContextSupplier.get() : AuthenticationContext.captureCurrent();
+        if (authenticationContextSupplier != null && !authenticationContextSupplier.get().equals(AuthenticationContext.empty())) {
+            this.authenticationContext = authenticationContextSupplier.get();
+        } else {
+            AuthenticationContext deploymentsAuthenticationContext = AuthenticationContext.getContextManager().getClassLoaderDefault(invokedProxy.getClass().getClassLoader());
+            if (deploymentsAuthenticationContext != null && !deploymentsAuthenticationContext.equals(AuthenticationContext.empty())) {
+                this.authenticationContext = deploymentsAuthenticationContext;
+            } else {
+                this.authenticationContext = AuthenticationContext.captureCurrent();
+            }
+        }
+
         this.discoveryContext = discoveryContext;
         this.invokedProxy = invokedProxy;
         this.parameters = parameters;
