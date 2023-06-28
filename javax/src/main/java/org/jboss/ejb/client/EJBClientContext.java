@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 
 import org.jboss.ejb._private.Keys;
 import org.jboss.ejb._private.Logs;
+import org.jboss.ejb.protocol.remote.RemoteOutboundAuthenticationContextEJBClientInterceptor;
 import org.jboss.ejb.protocol.remote.RemotingEJBClientInterceptor;
 import org.wildfly.common.Assert;
 import org.wildfly.common.context.ContextManager;
@@ -126,6 +127,7 @@ public final class EJBClientContext extends Attachable implements Contextual<EJB
     static final InterceptorList defaultInterceptors = new InterceptorList(new EJBClientInterceptorInformation[] {
         EJBClientInterceptorInformation.forClass(TransactionInterceptor.class),
         EJBClientInterceptorInformation.forClass(AuthenticationContextEJBClientInterceptor.class),
+        EJBClientInterceptorInformation.forClass(RemoteOutboundAuthenticationContextEJBClientInterceptor.class),
         EJBClientInterceptorInformation.forClass(NamingEJBClientInterceptor.class),
         EJBClientInterceptorInformation.forClass(DiscoveryEJBClientInterceptor.class),
         EJBClientInterceptorInformation.forClass(TransactionPostDiscoveryInterceptor.class),
